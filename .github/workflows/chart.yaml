@@ -40,7 +40,6 @@ jobs:
 
       - name: Push Helm Chart to GAR
         run: |
-          #gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
           helm version 
           helm push --debug $CHART_NAME-$CHART_VERSION.tgz oci://us-central1-docker.pkg.dev/charming-study-382702/my-hello-repo
         env:
