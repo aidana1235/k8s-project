@@ -1,0 +1,4 @@
+container:
+  image: proj-image
+
+replicaCount: 1

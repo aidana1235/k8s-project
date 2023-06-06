@@ -1,0 +1,53 @@
+name: Push Helm Chart to GAR
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: charming-study-382702
+  GAR_LOCATION: us-central1
+  REPOSITORY: my-hello-repo
+  CHART_NAME: k8s-helm
+  CHART_VERSION: 0.1.0
+
+jobs:
+  push-chart:
+    name: Push Helm Chart to GAR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: "v3.8.1"
+
+      - name: Lint Helm Chart
+        run: helm lint $CHART_NAME
+
+      - name: Package Helm Chart
+        run: helm package $CHART_NAME --version $CHART_VERSION --destination .
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0.6.0
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY_PROJ }}
+          token_format: "access_token"
+
+      - name: Push Helm Chart to GAR
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          helm version 
+          helm push --debug $CHART_NAME-$CHART_VERSION.tgz oci://us-central1-docker.pkg.dev/charming-study-382702/my-hello-repo
+        env:
+          HELM_EXPERIMENTAL_OCI: 1
+
+      - name: Install trivy
+        run: curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Scan Helm Chart Manifests
+        run: trivy --quiet --exit-code 0 --severity HIGH,CRITICAL --no-progress charts/*.tgz
