@@ -8,7 +8,7 @@ on:
 env:
   PROJECT_ID: charming-study-382702
   GAR_LOCATION: us-central1
-  REPOSITORY: my-hello-repo
+  REPOSITORY: for-hello-docker
   CHART_NAME: k8s-helm
   CHART_VERSION: 0.1.0
 
@@ -27,7 +27,7 @@ jobs:
           version: "v3.8.1"
 
       - name: Lint Helm Chart
-        run: helm lint k8s-helm
+        run: helm lint $CHART_NAME
 
       - name: Package Helm Chart
         run: helm package $CHART_NAME --version $CHART_VERSION --destination .
@@ -40,9 +40,7 @@ jobs:
 
       - name: Push Helm Chart to GAR
         run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
-          helm version
-          helm push --debug $CHART_NAME-$CHART_VERSION.tgz oci://us-central1-docker.pkg.dev/charming-study-382702/my-hello-repo
+          helm push k8s-helm-0.1.0.tgz oci://us-central1-docker.pkg.dev/charming-study-382702/for-hello-docker
         env:
           HELM_EXPERIMENTAL_OCI: 1
 
