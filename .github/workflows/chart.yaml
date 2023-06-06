@@ -40,6 +40,7 @@ jobs:
 
       - name: Push Helm Chart to GAR
         run: |
+          helm registry login -u oauth2accesstoken -p "ya29.a0AWY7Ckm26J0Xp9O7WB40TqO3i9MTMBOsCDMDtPXYhBsiCEjv_AN-GhcxprO-pkkhbgEfiGJ1RxAinMGZzajKYvhI1JVZt4JQlekjLePy7dkFBmKKadTd9bifGK6d7gv_U1NgDpvlk-zqzabMcMqKTq2Grqu-YNm4S-Q2aCgYKAaISARESFQG1tDrpxTMTu4TCVl3182DUC8lb1A0171" https://us-central1-docker.pkg.dev/charming-study-382702/for-hello-docker
           helm push k8s-helm-0.1.0.tgz oci://us-central1-docker.pkg.dev/charming-study-382702/for-hello-docker
         env:
           HELM_EXPERIMENTAL_OCI: 1
